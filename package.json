@@ -1,13 +1,46 @@
 {
   "name": "test-email-generator",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Test Email Generator for Outlook",
+  "main": "src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron .",
+    "build": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["electron", "outlook", "email", "test"],
+  "author": "EmberGrave",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.13.0"
+  },
+  "dependencies": {
+    "node-powershell": "^5.0.1"
+  },
+  "build": {
+    "appId": "com.embergrave.testemailgenerator",
+    "productName": "Test Email Generator",
+    "win": {
+      "target": "portable",
+      "icon": "assets/icon.png",
+      "artifactName": "Test Email Generator.exe",
+      "signAndEditExecutable": false
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json",
+      "saved_emails.txt"
+    ],
+    "extraResources": [
+      "saved_emails.txt"
+    ],
+    "asar": true,
+    "forceCodeSigning": false
+  }
 }

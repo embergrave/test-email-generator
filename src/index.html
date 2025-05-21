@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Email Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <h1 class="app-title">Test Email Generator</h1>
+    
+    <div class="form-container">
+      <div class="input-group">
+        <label for="email-input">Email Address</label>
+        <div class="combo-box">
+          <input type="email" id="email-input" placeholder="Enter or select email address" autocomplete="off">
+          <button id="dropdown-toggle" class="dropdown-toggle" tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path fill="none" d="M0 0h24v24H0z"/>
+              <path d="M12 16l-6-6h12z" fill="currentColor"/>
+            </svg>
+          </button>
+          <div id="dropdown-list" class="dropdown-list hidden"></div>
+        </div>
+      </div>
+      
+      <button id="send-button" class="send-button">
+        <span class="button-text">Send Test Email</span>
+        <span id="loader" class="loader hidden"></span>
+      </button>
+    </div>
+    
+    <div id="message" class="message hidden"></div>
+    
+    <div class="footer">
+      <p>Test emails are sent through your Outlook client</p>
+      <p>Email addresses are saved to saved_emails.txt</p>
+    </div>
+  </div>
+  
+  <script src="renderer.js"></script>
+</body>
+</html>
