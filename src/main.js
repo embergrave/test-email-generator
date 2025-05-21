@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
-const { PowerShell } = require('node-powershell');
+const { exec } = require('node:child_process');
 
 // Keep a global reference of the window object
 let mainWindow;
@@ -66,38 +66,52 @@ function generateRandomId() {
   return result;
 }
 
-// Send email using Outlook via PowerShell
+// Send email using Outlook via PowerShell with direct child_process approach
 async function sendOutlookEmail(emailAddress) {
-  const ps = new PowerShell({
-    executionPolicy: 'Bypass',
-    noProfile: true
+  return new Promise((resolve, reject) => {
+    try {
+      const randomId = generateRandomId();
+      const subject = `Admin Test #${randomId}`;
+      const body = `This is an admin test (#${randomId}) of the email system.`;
+      
+      // Create a PowerShell command that works with all Outlook versions
+      const psCommand = `
+        try {
+          $outlook = New-Object -ComObject Outlook.Application
+          $mail = $outlook.CreateItem(0) # 0 = olMailItem
+          $mail.To = '${emailAddress}'
+          $mail.Subject = '${subject}'
+          $mail.Body = '${body}'
+          $mail.Display()
+          Write-Output "Email prepared successfully for ${emailAddress}"
+        } catch {
+          Write-Error "Failed to create Outlook email: $_"
+          exit 1
+        }
+      `;
+      
+      // Execute the PowerShell command
+      exec(`powershell -ExecutionPolicy Bypass -NoProfile -Command "${psCommand}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error('PowerShell execution error:', error);
+          resolve({ success: false, message: `Failed to create email: ${error.message}` });
+          return;
+        }
+        
+        if (stderr && stderr.trim() !== '') {
+          console.warn('PowerShell stderr:', stderr);
+          resolve({ success: false, message: `Error in Outlook automation: ${stderr}` });
+          return;
+        }
+        
+        console.log('PowerShell stdout:', stdout);
+        resolve({ success: true, message: stdout.trim() });
+      });
+    } catch (error) {
+      console.error('Error preparing email command:', error);
+      resolve({ success: false, message: `Application error: ${error.toString()}` });
+    }
   });
-
-  try {
-    const randomId = generateRandomId();
-    const subject = `Admin Test #${randomId}`;
-    const body = `This is an admin test (#${randomId}) of the email system.`;
-    
-    // PowerShell script to send email via Outlook
-    await ps.addCommand(`
-      $outlook = New-Object -ComObject Outlook.Application
-      $mail = $outlook.CreateItem(0)
-      $mail.To = "${emailAddress}"
-      $mail.Subject = "${subject}"
-      $mail.Body = "${body}"
-      $mail.Display()
-      return "Email prepared successfully for ${emailAddress}"
-    `);
-    
-    const result = await ps.invoke();
-    console.log(result);
-    return { success: true, message: result };
-  } catch (error) {
-    console.error('PowerShell Error:', error);
-    return { success: false, message: error.toString() };
-  } finally {
-    await ps.dispose();
-  }
 }
 
 // Create the browser window
