@@ -1,2 +1,12 @@
+# Dependencies
 node_modules
 .env
+
+# Build outputs
+dist/
+*.exe
+*.zip
+
+# Misc
+.DS_Store
+Thumbs.db
