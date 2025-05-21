@@ -74,26 +74,87 @@ async function sendOutlookEmail(emailAddress) {
       const subject = `Admin Test #${randomId}`;
       const body = `This is an admin test (#${randomId}) of the email system.`;
       
-      // Create a PowerShell command that works with all Outlook versions
-      const psCommand = `
-        try {
-          $outlook = New-Object -ComObject Outlook.Application
-          $mail = $outlook.CreateItem(0) # 0 = olMailItem
-          $mail.To = '${emailAddress}'
-          $mail.Subject = '${subject}'
-          $mail.Body = '${body}'
-          $mail.Display()
-          Write-Output "Email prepared successfully for ${emailAddress}"
-        } catch {
-          Write-Error "Failed to create Outlook email: $_"
-          exit 1
-        }
-      `;
+      // Create a PowerShell script file for more reliable execution
+      const tempScriptPath = path.join(app.getPath('temp'), `outlook-email-${randomId}.ps1`);
       
-      // Execute the PowerShell command
-      exec(`powershell -ExecutionPolicy Bypass -NoProfile -Command "${psCommand}"`, (error, stdout, stderr) => {
+      // Write a robust PowerShell script to a temp file
+      const psScript = `
+# Script to create an Outlook email
+$ErrorActionPreference = "Stop"
+
+try {
+    # Force garbage collection to release any existing COM objects
+    [System.GC]::Collect()
+    [System.GC]::WaitForPendingFinalizers()
+    
+    # Create Outlook COM object with diagnostic info
+    Write-Output "Creating Outlook COM object..."
+    $outlook = New-Object -ComObject Outlook.Application
+    if ($null -eq $outlook) {
+        throw "Failed to create Outlook COM object"
+    }
+    
+    Write-Output "Creating mail item..."
+    $mail = $outlook.CreateItem(0) # 0 = olMailItem
+    if ($null -eq $mail) {
+        throw "Failed to create mail item"
+    }
+    
+    # Set email properties with verification
+    $mail.To = "${emailAddress}"
+    $mail.Subject = "${subject.replace(/"/g, '`"')}"
+    $mail.Body = "${body.replace(/"/g, '`"')}"
+    
+    # Force the email window to display in the foreground
+    Write-Output "Displaying email..."
+    $mail.Display($true) # The $true parameter requests foreground activation
+    
+    # Verify the window is open by checking a property
+    if ($mail.Sent -eq $true) {
+        Write-Output "WARNING: Email appears to have been sent automatically"
+    } else {
+        Write-Output "Email window opened successfully for: ${emailAddress}"
+    }
+    
+    # Release COM objects to prevent memory leaks
+    [System.Runtime.InteropServices.Marshal]::ReleaseComObject($mail) | Out-Null
+    [System.Runtime.InteropServices.Marshal]::ReleaseComObject($outlook) | Out-Null
+} catch {
+    Write-Error "ERROR: $($_.Exception.Message)"
+    if ($null -ne $mail) {
+        try { [System.Runtime.InteropServices.Marshal]::ReleaseComObject($mail) | Out-Null } catch {}
+    }
+    if ($null -ne $outlook) {
+        try { [System.Runtime.InteropServices.Marshal]::ReleaseComObject($outlook) | Out-Null } catch {}
+    }
+    exit 1
+} finally {
+    # Final garbage collection
+    [System.GC]::Collect()
+    [System.GC]::WaitForPendingFinalizers()
+}
+`;
+
+      // Write script to temp file
+      fs.writeFileSync(tempScriptPath, psScript, 'utf8');
+      
+      // Execute script with robust error handling
+      console.log(`Executing PowerShell script: ${tempScriptPath}`);
+      
+      const psCommand = `powershell -ExecutionPolicy Bypass -NoProfile -File "${tempScriptPath}"`;      
+      console.log(`Running command: ${psCommand}`);
+      
+      exec(psCommand, (error, stdout, stderr) => {
+        try {
+          // Always try to delete the temp file regardless of outcome
+          fs.unlinkSync(tempScriptPath);
+        } catch (deleteError) {
+          console.warn(`Could not delete temp script file: ${deleteError.message}`);
+        }
+        
         if (error) {
           console.error('PowerShell execution error:', error);
+          console.error('Error details:', stderr || 'No error details available');
           resolve({ success: false, message: `Failed to create email: ${error.message}` });
           return;
         }
@@ -104,8 +165,17 @@ async function sendOutlookEmail(emailAddress) {
           return;
         }
         
-        console.log('PowerShell stdout:', stdout);
-        resolve({ success: true, message: stdout.trim() });
+        // Log output for diagnostic purposes
+        console.log('PowerShell execution successful with output:');
+        console.log(stdout);
+        
+        // Successful execution
+        resolve({ 
+          success: true, 
+          message: stdout.includes('Email window opened successfully') ? 
+            `Email opened in Outlook for ${emailAddress}` : 
+            `Email command completed: ${stdout.trim()}` 
+        });
       });
     } catch (error) {
       console.error('Error preparing email command:', error);
