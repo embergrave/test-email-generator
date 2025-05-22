@@ -1,6 +1,6 @@
 // DOM Elements
 const emailInput = document.getElementById('emailInput');
-const emailDropdown = document.getElementById('emailDropdown');
+const emailList = document.getElementById('emailList');
 const countInput = document.getElementById('countInput');
 const generateBtn = document.getElementById('generateBtn');
 const statusMessage = document.getElementById('statusMessage');
@@ -21,29 +21,22 @@ async function loadSavedEmails() {
   try {
     const emails = await window.api.loadEmails();
     
-    // Clear the dropdown (except the first disabled option)
-    while (emailDropdown.options.length > 1) {
-      emailDropdown.remove(1);
-    }
+    // Clear the datalist
+    emailList.innerHTML = '';
     
-    // Add emails to dropdown
+    // Add emails to datalist
     for (const email of emails) {
       const option = document.createElement('option');
       option.value = email;
-      option.textContent = email;
-      emailDropdown.appendChild(option);
+      emailList.appendChild(option);
     }
   } catch (error) {
     showStatus('Error loading saved emails', true);
   }
 }
 
-// Select email from dropdown
-emailDropdown.addEventListener('change', () => {
-  if (emailDropdown.value) {
-    emailInput.value = emailDropdown.value;
-  }
-});
+// The datalist works automatically with the input
+// No need for a separate change event handler
 
 // Validate inputs and enable/disable generate button
 function validateInputs() {

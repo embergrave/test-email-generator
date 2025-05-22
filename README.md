@@ -8,12 +8,13 @@ A simple, user-friendly desktop application that allows you to manage test email
 * **Custom Window Frame**: The standard Windows frame is hidden; close and minimize buttons are styled to match the custom dark mode skin for a fully integrated visual experience
 * **Email Address Management**: Automatically saves previously used email addresses
 * **Dropdown Selection**: Easily choose from previously entered email addresses
-* **Test Count Control**: A numeric input field (0–9) next to the Generate button lets you specify how many test emails to generate
-* **Generate Button**: Initiates the generation process (does not send emails)
+* **Unified Email Input**: Combo input field that suggests previously used email addresses
+* **Test Count Control**: A numeric input field (0–9) positioned next to the Generate button
+* **Generate Button**: Sleek, green-themed button that initiates the generation process
 * **Zero Installation**: Runs as a standalone application - just unzip and click
 * **Portable**: Can be carried on a USB drive or shared as a simple zip file
 * **Email Storage**: Previously used email addresses are stored for quick access
-* **Custom UI**: Clean, dark-themed interface with custom window controls
+* **Modern UI**: Elegant green-on-dark theme with subtle gradients and animations
 
 ## Requirements
 
