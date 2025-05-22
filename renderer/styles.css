@@ -89,19 +89,25 @@ body {
   overflow-y: auto;
 }
 
-/* Layout for count input and generate button side by side */
-.actions-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* Generate container and input row layout */
+.generate-container {
   margin-bottom: 16px;
 }
 
-.actions-row .count-container {
-  flex: 0 0 auto;
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 
-.actions-row .btn-container {
+.count-container {
+  flex: 0 0 auto;
+  position: relative;
+}
+
+/* Make the generate button take up remaining space */
+.input-row button {
   flex: 1;
 }
 
@@ -137,36 +143,86 @@ input:focus, select:focus {
 
 /* Custom styling for number input */
 input[type="number"] {
-  width: 60px;
+  width: 50px;
+  height: 40px;
   text-align: center;
   -moz-appearance: textfield; /* Firefox */
   appearance: textfield; /* Standard */
+  padding: 8px;
+  font-size: 16px;
 }
 
-/* Custom arrows for number input */
+/* Improve visibility of number input arrows in dark mode */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
-  background: var(--surface-color) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="10"><path d="M0 0 L4 0 L2 3 z" fill="%23666"/><path d="M0 10 L4 10 L2 7 z" fill="%23666"/></svg>') no-repeat center center;
-  width: 16px;
-  height: 100%;
-  opacity: 1;
+  margin: 0;
+}
+
+/* Custom number input wrapper with arrows */
+.count-container {
+  position: relative;
+}
+
+.count-container::after {
+  content: '';
   position: absolute;
   right: 0;
   top: 0;
-  cursor: pointer;
+  height: 100%;
+  width: 16px;
+  background-color: var(--border-color);
+  pointer-events: none;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Up arrow */
+.count-container::before {
+  content: '';
+  position: absolute;
+  right: 5px;
+  top: 12px;
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 3px solid var(--text-color);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Down arrow - using ::after pseudo-element */
+.count-container > input::after {
+  content: '';
+  position: absolute;
+  right: 5px;
+  bottom: 12px;
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 3px solid var(--text-color);
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* Email datalist styling */
 .email-combo-container {
   position: relative;
   width: 100%;
+  margin-bottom: 12px;
 }
 
 .email-combo-container input {
   padding-right: 30px;
 }
 
+/* Custom dropdown arrow that doesn't duplicate with native arrow */
 .email-combo-container::after {
   content: '▼';
   font-size: 10px;
@@ -178,35 +234,114 @@ input[type="number"]::-webkit-outer-spin-button {
   pointer-events: none;
 }
 
+/* Hide native datalist dropdown arrow in Chrome/Safari */
+input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
 select {
   cursor: pointer;
 }
 
+/* Generate button base styling */
 .primary-btn {
+  position: relative;
   background: var(--primary-gradient);
   color: white;
   border: none;
   border-radius: 4px;
   padding: 10px 20px;
+  height: 40px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
+/* Button hover state */
 .primary-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
   filter: brightness(1.05);
 }
 
+/* Button disabled state */
 .primary-btn:disabled {
   background: var(--border-color);
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
   filter: grayscale(1);
+}
+
+/* Loading animation bar */
+.primary-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: width 0.5s ease;
+}
+
+/* Generate button states */
+.primary-btn[data-state="generating"]::before {
+  width: 100%;
+  animation: loading-progress 2s ease-in-out infinite;
+}
+
+/* Loading bar animation */
+@keyframes loading-progress {
+  0% { width: 0; }
+  50% { width: 100%; }
+  100% { width: 0; }
+}
+
+/* Generate button hover state when in generating mode - shows cancel option */
+.primary-btn[data-state="generating"]:hover {
+  background: linear-gradient(145deg, #d32f2f, #b71c1c);
+}
+
+/* Change text when hovering over generating button */
+.primary-btn[data-state="generating"]:hover .btn-text {
+  opacity: 0;
+}
+
+.primary-btn[data-state="generating"]:hover .btn-text::after {
+  content: 'Cancel';
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 1;
+}
+
+/* Button text styling */
+.btn-text {
+  position: relative;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+/* Change text from Generate to Generating when in generating state */
+.primary-btn[data-state="generating"] .btn-text::after {
+  content: 'Generating';
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.primary-btn[data-state="generating"] .btn-text {
+  opacity: 0;
+}
+
+.primary-btn[data-state="generating"] .btn-text::after {
+  opacity: 1;
 }
 
 .status-message {

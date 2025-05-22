@@ -48,6 +48,17 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [1.2.0] - 2025-05-22
+
+### Enhanced Interaction
+
+- Refactored Generate button with animated loading/cancel states
+- Improved number input styling with better visibility in dark mode
+- Fixed duplicate dropdown arrow in email combo box
+- Simplified layout with cleaner organization of inputs
+- Added interactive states for the generation process
+- Enhanced UI feedback with animated button transitions
+
 ## [1.1.0] - 2025-05-22
 
 ### Changed

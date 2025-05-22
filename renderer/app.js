@@ -71,8 +71,17 @@ function hideStatus() {
   statusMessage.className = 'status-message';
 }
 
+// Track generating state
+let isGenerating = false;
+
 // Generate button click handler
 generateBtn.addEventListener('click', async () => {
+  // If currently generating, this is a cancel action
+  if (isGenerating) {
+    cancelGeneration();
+    return;
+  }
+
   const email = emailInput.value.trim();
   const count = Number.parseInt(countInput.value, 10);
   
@@ -93,16 +102,51 @@ generateBtn.addEventListener('click', async () => {
     // Reload the email dropdown
     await loadSavedEmails();
     
-    // Show success message with the generate placeholder
-    showStatus(`Successfully generated ${count} test email${count !== 1 ? 's' : ''} for ${email}`, false);
+    // Start generation animation
+    startGeneration();
     
-    // Here you would typically call a function to actually generate the emails
-    console.log(`Generating ${count} test email(s) for ${email}`);
+    // Simulate async generation process (will be replaced with actual generation in future)
+    setTimeout(() => {
+      // Complete generation after a delay
+      completeGeneration();
+      
+      // Show success message
+      showStatus(`Successfully generated ${count} test email${count !== 1 ? 's' : ''} for ${email}`, false);
+      
+      console.log(`Generating ${count} test email(s) for ${email}`);
+    }, 2500); // Simulate a ~2.5 second operation
     
   } catch (error) {
     showStatus('Error generating test emails', true);
+    // Reset UI on error
+    completeGeneration();
   }
 });
+
+// Start the generation process and update UI
+function startGeneration() {
+  isGenerating = true;
+  generateBtn.setAttribute('data-state', 'generating');
+  // Disable email input and count during generation
+  emailInput.disabled = true;
+  countInput.disabled = true;
+}
+
+// Complete the generation process and reset UI
+function completeGeneration() {
+  isGenerating = false;
+  generateBtn.setAttribute('data-state', 'idle');
+  // Re-enable inputs
+  emailInput.disabled = false;
+  countInput.disabled = false;
+}
+
+// Cancel the generation process
+function cancelGeneration() {
+  // In future versions, this would cancel any in-progress operations
+  completeGeneration();
+  showStatus('Generation cancelled', false);
+}
 
 // Enforce number input range (0-9)
 countInput.addEventListener('change', () => {

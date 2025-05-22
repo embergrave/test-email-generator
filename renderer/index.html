@@ -30,14 +30,14 @@
         </div>
       </div>
       
-      <div class="actions-row">
-        <div class="count-container">
-          <label for="countInput">Count (0-9)</label>
-          <input type="number" id="countInput" min="0" max="9" value="1">
-        </div>
-        
-        <div class="btn-container">
-          <button id="generateBtn" class="primary-btn">Generate</button>
+      <div class="generate-container">
+        <div class="input-row">
+          <div class="count-container">
+            <input type="number" id="countInput" min="0" max="9" value="1" aria-label="Number of emails to generate">
+          </div>
+          <button id="generateBtn" class="primary-btn" data-state="idle">
+            <span class="btn-text">Generate</span>
+          </button>
         </div>
       </div>
 
