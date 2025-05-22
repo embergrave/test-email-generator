@@ -1,0 +1,13 @@
+{
+  "name": "test-email-generator",
+  "version": "1.0.0",
+  "description": "Barebones Node.js project for a test email generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
