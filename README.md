@@ -12,6 +12,8 @@ A simple, user-friendly desktop application that allows you to manage test email
 * **Generate Button**: Initiates the generation process (does not send emails)
 * **Zero Installation**: Runs as a standalone application - just unzip and click
 * **Portable**: Can be carried on a USB drive or shared as a simple zip file
+* **Email Storage**: Previously used email addresses are stored for quick access
+* **Custom UI**: Clean, dark-themed interface with custom window controls
 
 ## Requirements
 
@@ -44,6 +46,44 @@ The application saves your email addresses to a file called `saved_emails.txt` l
 
 * Each line contains a previously used email address
 * The application will remember up to 10 of your most recently used email addresses
+
+## Development
+
+### Prerequisites
+
+* Node.js 18+ installed
+* npm package manager
+
+### Setup Development Environment
+
+1. Clone the repository
+
+   ```bash
+   git clone https://github.com/embergrave/test-email-generator.git
+   cd test-email-generator
+   ```
+
+2. Install dependencies
+
+   ```bash
+   npm install
+   ```
+
+3. Start the application in development mode
+
+   ```bash
+   npm start
+   ```
+
+### Building the Portable Executable
+
+To build the portable executable for Windows:
+
+```bash
+npm run build
+```
+
+This will create a portable executable in the `dist` folder. The file is named `Test Email Generator.exe` and can be run on any Windows 11 system without installation.
 
 ### Editing Saved Emails
 

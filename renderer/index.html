@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Test Email Generator</title>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Custom title bar -->
+    <div class="title-bar">
+      <div class="title">Test Email Generator</div>
+      <div class="window-controls">
+        <button id="minimize-btn" class="control-btn minimize" title="Minimize">─</button>
+        <button id="close-btn" class="control-btn close" title="Close">✕</button>
+      </div>
+    </div>
+    
+    <!-- Main content -->
+    <div class="content">
+      <div class="form-group">
+        <label for="emailInput">Email Address</label>
+        <input type="email" id="emailInput" placeholder="Enter email address" autocomplete="off">
+        <select id="emailDropdown">
+          <option value="" disabled selected>Select from previous emails</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="countInput">Number of Test Emails (0-9)</label>
+        <input type="number" id="countInput" min="0" max="9" value="1">
+      </div>
+      
+      <div class="form-group">
+        <button id="generateBtn" class="primary-btn">Generate</button>
+      </div>
+
+      <div id="statusMessage" class="status-message"></div>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

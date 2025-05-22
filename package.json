@@ -1,13 +1,30 @@
 {
   "name": "test-email-generator",
   "version": "1.0.0",
-  "description": "Barebones Node.js project for a test email generator",
-  "main": "index.js",
+  "description": "Desktop application for generating test emails",
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["electron", "email", "test", "generator"],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "build": {
+    "appId": "com.embergrave.test-email-generator",
+    "productName": "Test Email Generator",
+    "win": {
+      "target": "portable",
+      "icon": "renderer/assets/icon.ico"
+    },
+    "portable": {
+      "artifactName": "Test Email Generator.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  }
 }
